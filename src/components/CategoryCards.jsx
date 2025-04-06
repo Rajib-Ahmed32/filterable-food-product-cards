@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { CircularProgress, Box, Typography, Alert } from "@mui/material";
+import SearchBar from "./SearchBar"; // Make sure this file/component exists
 
 const CategoryCards = ({ categories, loading, error }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value.toLowerCase());
+  };
+
+  const filteredCategories = categories.filter((category) =>
+    category.strCategory.toLowerCase().includes(searchTerm)
+  );
+
   if (loading) {
     return (
       <Box
@@ -30,9 +41,13 @@ const CategoryCards = ({ categories, loading, error }) => {
 
   return (
     <div>
+      <div className="searchbar">
+        <SearchBar searchTerm={searchTerm} onSearchChange={handleSearchChange} />
+      </div>
+
       <div className="card-container">
-        {categories.length > 0 ? (
-          categories.map((category) => (
+        {filteredCategories.length > 0 ? (
+          filteredCategories.map((category) => (
             <div key={category.idCategory} className="card">
               <h3>{category.strCategory}</h3>
               <img src={category.strCategoryThumb} alt={category.strCategory} />
