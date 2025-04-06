@@ -1,17 +1,29 @@
 import React, { useState } from "react";
 import { CircularProgress, Box, Typography, Alert } from "@mui/material";
-import SearchBar from "./SearchBar"; // Make sure this file/component exists
+import SearchBar from "./SearchBar";
+import SortDropdown from "./SortDropdown"; 
 
 const CategoryCards = ({ categories, loading, error }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
-  const filteredCategories = categories.filter((category) =>
-    category.strCategory.toLowerCase().includes(searchTerm)
-  );
+  const handleSort = (event) => {
+    setSortOrder(event.target.value);
+  };
+
+  const filteredCategories = categories
+    .filter((category) =>
+      category.strCategory.toLowerCase().includes(searchTerm)
+    )
+    .sort((a, b) =>
+      sortOrder === "asc"
+        ? a.strCategory.localeCompare(b.strCategory)
+        : b.strCategory.localeCompare(a.strCategory)
+    );
 
   if (loading) {
     return (
@@ -43,6 +55,7 @@ const CategoryCards = ({ categories, loading, error }) => {
     <div>
       <div className="searchbar">
         <SearchBar searchTerm={searchTerm} onSearchChange={handleSearchChange} />
+        <SortDropdown sortOrder={sortOrder} onSortChange={handleSort} />
       </div>
 
       <div className="card-container">
