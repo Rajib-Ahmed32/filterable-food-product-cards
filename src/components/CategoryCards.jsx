@@ -1,18 +1,26 @@
 import React, { useState } from "react";
 import { CircularProgress, Box, Typography, Alert } from "@mui/material";
 import SearchBar from "./SearchBar";
-import SortDropdown from "./SortDropdown"; 
+import SortDropdown from "./SortDropdown";
+import Pagination from "./Pagination"; 
 
 const CategoryCards = ({ categories, loading, error }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 8;
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value.toLowerCase());
+    setPage(1); 
   };
 
   const handleSort = (event) => {
     setSortOrder(event.target.value);
+  };
+
+  const handleChangePage = (event, value) => {
+    setPage(value);
   };
 
   const filteredCategories = categories
@@ -24,6 +32,12 @@ const CategoryCards = ({ categories, loading, error }) => {
         ? a.strCategory.localeCompare(b.strCategory)
         : b.strCategory.localeCompare(a.strCategory)
     );
+
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedCategories = filteredCategories.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   if (loading) {
     return (
@@ -59,8 +73,8 @@ const CategoryCards = ({ categories, loading, error }) => {
       </div>
 
       <div className="card-container">
-        {filteredCategories.length > 0 ? (
-          filteredCategories.map((category) => (
+        {paginatedCategories.length > 0 ? (
+          paginatedCategories.map((category) => (
             <div key={category.idCategory} className="card">
               <h3>{category.strCategory}</h3>
               <img src={category.strCategoryThumb} alt={category.strCategory} />
@@ -73,6 +87,12 @@ const CategoryCards = ({ categories, loading, error }) => {
           </Typography>
         )}
       </div>
+
+      <Pagination
+        count={Math.ceil(filteredCategories.length / itemsPerPage)}
+        page={page}
+        onPageChange={handleChangePage}
+      />
     </div>
   );
 };
